@@ -127,8 +127,9 @@ classdef Plot < handle
             plot.XMinorGrid      = 'off';
             plot.YMinorGrid      = 'off';
             plot.ZMinorGrid      = 'off';
-            plot.LegendBox       = 'off';
+            plot.LegendBox       = 'on';
             plot.LegendBoxColor  = [1,1,1];
+            plot.LegendLoc       = 'best';
             plot.LegendTextColor = [0,0,0];
             plot.MarkerSpacing   = 5;
             plot.Markers         = '';            
@@ -956,10 +957,11 @@ classdef Plot < handle
 
             if strcmpi(fileType, 'eps')
                 print(self.hfig, '-depsc2', FileName);
-                vers = version();
-                if ~strcmp(vers(1:3), '8.4')
-                    fixPSlinestyle(FileName);
-                end
+                %% REMOVED BY CHARLES
+%                 vers = version();
+%                 if ~strcmp(vers(1:3), '8.4')
+%                     fixPSlinestyle(FileName);
+%                 end
             elseif strcmpi(fileType, 'pdf')
                 print(self.hfig, '-dpdf', FileName);
             elseif strcmpi(fileType, 'jpg') || strcmpi(fileType, 'jpeg')
