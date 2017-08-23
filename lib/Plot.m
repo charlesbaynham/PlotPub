@@ -527,6 +527,11 @@ classdef Plot < handle
         end
         
         function set.Colors(self, Colors)
+            if ~iscell(Colors)
+                tmp = Colors;
+                Colors = [];
+                Colors{1} = tmp;
+            end
             if self.holdLines == false
                 for ii=1:self.N   
                     if ii > size(Colors)
