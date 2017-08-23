@@ -30,7 +30,7 @@ classdef Plot < handle
 %   changes.
 %
 % Properties:
-%   BoxDim:       vector [width, height]: size of the axes box in current unit; 
+%   BoxDim:       vector [width, height]: size of the axes box in currnet unit; 
 %                 default: [6, 2.5] inches
 %   ShowBox:      'on' = show or 'off' = hide bounding box
 %   FontName:     string: font name; default: 'Helvetica'
@@ -250,7 +250,14 @@ classdef Plot < handle
                 if isempty(varargin{1})
                     self.hfig = gcf;
                 elseif ishandle(varargin{1})
-                    self.hfig = varargin{1};
+                    if isa(varargin{1},'matlab.ui.Figure')
+                        self.hfig = varargin{1};
+                    elseif isa(varargin{1},'matlab.graphics.axis.Axes')
+                        self.hfig = get(varargin{1}, 'Parent');
+                    else
+                        self.hfig = gcf;
+                        self.holdLines = false;
+                    end
                 elseif ischar(varargin{1})
                     open(varargin{1});
                     self.hfig = gcf;
