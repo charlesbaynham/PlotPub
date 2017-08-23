@@ -470,42 +470,10 @@ classdef Plot < handle
                     if strcmp(self.markers{ii}, '')
                         self.markers{ii} = 'None';
                     end
-                    
-                    if ~strcmp(self.markers{ii}, 'None')
-                        if isempty(self.hm{ii}) && ~strcmp(self.markers{ii}, 'None')
-                            X = self.xdata{ii};
-                            Y = self.ydata{ii};
-
-                            hold(self.haxes, 'on')
-                            self.hm{ii} = plot (X(1:self.markerSpacing(ii):end), Y(1:self.markerSpacing(ii):end));
-                        end
-                        set(self.hm{ii}, ...
-                          'LineStyle'       , 'None', ...
-                          'Marker'          , self.markers{ii},...
-                          'Color'           , self.colors{ii}, ...
-                          'MarkerEdgeColor' , 'none',...
-                          'MarkerFaceColor' , self.colors{ii}, ...
-                          'MarkerSize'      , 3*self.lineWidth(ii)); 
-                    
-                        if isempty(self.hfm{ii})
-                            X = self.xdata{ii};
-                            Y = self.ydata{ii};
-                        
-                            hold(self.haxes, 'on')
-                            self.hfm{ii} = plot(X, Y);
-                        end
-                        set(self.hfm{ii}, ...
-                          'LineStyle'       , self.lineStyle{ii}, ...
-                          'Marker'          , self.markers{ii},...
-                          'Color'           , self.colors{ii}, ...
-                          'MarkerEdgeColor' , 'none',...
-                          'MarkerFaceColor' , self.colors{ii}, ...
-                          'MarkerSize'      , 3*self.lineWidth(ii), ...
-                          'LineWidth'       , self.lineWidth(ii),...
-                          'Visible'         , 'off');
-                    end                       
                 end
-            end 
+            end
+
+            self.refreshMarkerPlot();
         end
         function Markers = get.Markers(self)
             Markers = self.markers;
@@ -519,7 +487,9 @@ classdef Plot < handle
                        self.markerSpacing(ii) = MarkerSpacing(ii);
                     end
                 end
-            end 
+            end
+            
+            self.refreshMarkerPlot();
         end
         
         function MarkerSpacing = get.MarkerSpacing(self)
@@ -1021,6 +991,62 @@ classdef Plot < handle
         
         function h = findLegendHandle(self)
             h = findobj(self.hfig,'Type','legend');
+        end
+        
+        function refreshMarkerPlot(self)
+            
+            if self.holdLines == false && ~isempty(self.markers)
+                for ii=1:self.N
+                    if ~strcmp(self.markers{ii}, 'None')
+                        if isempty(self.hm{ii})
+                            X = self.xdata{ii};
+                            Y = self.ydata{ii};
+
+                            hold(self.haxes, 'on')
+                            self.hm{ii} = plot (X(1:self.markerSpacing(ii):end), Y(1:self.markerSpacing(ii):end));
+                        else
+                            X = self.xdata{ii};
+                            Y = self.ydata{ii};
+                            
+                            % Turn off the warning that's about to be
+                            % thrown
+                            w = warning();
+                            warning('off','MATLAB:gui:array:InvalidArrayShape');
+                            
+                            set(self.hm{ii}, 'XData', X(1:self.markerSpacing(ii):end));
+                            set(self.hm{ii}, 'YData', Y(1:self.markerSpacing(ii):end));
+                            
+                            % Restore warning state
+                            warning(w);
+                        end
+                        set(self.hm{ii}, ...
+                          'LineStyle'       , 'None', ...
+                          'Marker'          , self.markers{ii},...
+                          'Color'           , self.colors{ii}, ...
+                          'MarkerEdgeColor' , 'none',...
+                          'MarkerFaceColor' , self.colors{ii}, ...
+                          'MarkerSize'      , 3*self.lineWidth(ii)); 
+                    
+                        if isempty(self.hfm{ii})
+                            X = self.xdata{ii};
+                            Y = self.ydata{ii};
+                        
+                            hold(self.haxes, 'on')
+                            self.hfm{ii} = plot(X, Y);
+                        end
+                        set(self.hfm{ii}, ...
+                          'LineStyle'       , self.lineStyle{ii}, ...
+                          'Marker'          , self.markers{ii},...
+                          'Color'           , self.colors{ii}, ...
+                          'MarkerEdgeColor' , 'none',...
+                          'MarkerFaceColor' , self.colors{ii}, ...
+                          'MarkerSize'      , 3*self.lineWidth(ii), ...
+                          'LineWidth'       , self.lineWidth(ii),...
+                          'Visible'         , 'off');
+                    end                       
+                end
+            end
+            
         end
     end
 end
